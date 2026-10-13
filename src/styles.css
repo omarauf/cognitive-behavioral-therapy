@@ -152,6 +152,45 @@ figure figcaption { font-size: 14px; color: var(--muted-foreground); line-height
 .table-scroll td { text-align: start; vertical-align: top; padding: 15px 12px; border-bottom: 1px solid var(--border); min-width: 160px; }
 .table-scroll td:first-child { width: 31%; }
 .table-scroll tbody tr:hover { background: var(--muted); }
+.distortion-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-block: 24px; }
+.distortion-card { border: 1px solid var(--border); background: var(--card); border-radius: 16px; padding: 20px; min-width: 0; }
+.card-index { display: block; color: var(--accent-foreground); font-size: 17px; margin-bottom: 9px; }
+.distortion-card h5 { font-size: 18px; font-weight: 600; line-height: 1.65; }
+.card-term { display: block; font-size: 13px; line-height: 1.8; color: var(--primary-hover); text-align: end; margin-top: 4px; overflow-wrap: anywhere; }
+.distortion-card dd { font-size: 16px; line-height: 1.95; color: var(--muted-foreground); margin: 13px 0 0; }
+.reading-text .model-chain { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; list-style: none; padding: 0; margin-block: 24px; }
+.reading-text .model-chain[data-stages="5"] { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 24px; }
+.reading-text .model-stage { position: relative; min-width: 0; margin: 0; padding: 20px 16px; border: 1px solid var(--border); border-inline-start: 4px solid var(--primary); border-radius: 16px; background: var(--card); }
+.model-stage:not(:last-child)::after { content: '←'; position: absolute; inset-inline-end: -26px; top: 44%; width: 24px; text-align: center; color: var(--primary); font-size: 22px; }
+.model-chain[data-stages="5"] .model-stage:not(:last-child)::after { inset-inline-end: -23px; width: 20px; }
+.stage-letter { display: block; font-size: 32px; line-height: 1.15; font-weight: 600; color: var(--primary-hover); text-align: end; margin-bottom: 15px; }
+.model-stage h5 { font-size: 17px; line-height: 1.65; font-weight: 600; }
+.model-stage p { font-size: 16px; line-height: 1.95; margin: 15px 0 0; color: var(--muted-foreground); }
+.model-chain[data-stages="5"] .model-stage { padding-inline: 13px; }
+.model-chain[data-stages="5"] h5 { font-size: 16px; }
+.model-chain[data-stages="5"] .card-term { font-size: 12px; }
+.model-chain[data-stages="5"] p { font-size: 15px; }
+.model-stage[data-letter="D"], .model-stage[data-letter="E"] { border-inline-start-color: var(--accent); background: var(--accent-soft); }
+.model-stage[data-letter="D"] .stage-letter, .model-stage[data-letter="E"] .stage-letter { color: var(--accent-foreground); }
+@media (max-width: 1000px) {
+  .reading-text .model-chain[data-stages="5"] { grid-template-columns: 1fr; gap: 30px; }
+  .reading-text .model-chain[data-stages="5"] .model-stage { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 0 15px; padding: 18px; }
+  .model-chain[data-stages="5"] .stage-letter { grid-column: 1; grid-row: 1 / 4; margin: 0; align-self: center; }
+  .model-chain[data-stages="5"] h5, .model-chain[data-stages="5"] .card-term, .model-chain[data-stages="5"] p { grid-column: 2; }
+  .model-chain[data-stages="5"] h5 { font-size: 18px; }
+  .model-chain[data-stages="5"] p { font-size: 16px; margin-top: 8px; }
+  .model-chain[data-stages="5"] .model-stage:not(:last-child)::after { content: '↓'; inset-inline-end: auto; inset-inline-start: 31px; top: auto; bottom: -29px; width: 20px; height: 28px; }
+}
+@media (max-width: 700px) {
+  .distortion-grid { grid-template-columns: 1fr; gap: 14px; }
+  .reading-text .model-chain { grid-template-columns: 1fr; gap: 30px; }
+  .reading-text .model-chain .model-stage { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 0 15px; }
+  .model-chain .stage-letter { grid-column: 1; grid-row: 1 / 4; margin: 0; align-self: center; }
+  .model-chain h5, .model-chain .card-term, .model-chain p { grid-column: 2; }
+  .model-chain h5 { font-size: 18px; }
+  .model-chain p { margin-top: 8px; }
+  .model-chain .model-stage:not(:last-child)::after { content: '↓'; inset-inline-end: auto; inset-inline-start: 31px; top: auto; bottom: -29px; width: 20px; height: 28px; }
+}
 .diagram, .learning-demo { border: 1px solid var(--border); background: var(--primary-soft); border-radius: 20px; margin-block: 32px; padding: 26px; }
 .diagram > h3, .learning-demo > h3, .diagram > h4, .learning-demo > h4 { font-size: 23px; margin-bottom: 20px; }
 .diagram h4, .diagram h5 { font-size: 19px; }

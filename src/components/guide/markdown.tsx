@@ -17,6 +17,21 @@ import { Children, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Separator } from "@/components/ui/separator";
+import { arabicNumber } from "@/lib/guide-content";
+
+type TableKind = "approaches" | "distortions" | "model";
+
+function tableRows(source: string) {
+  return source
+    .split("\n")
+    .filter((line) => line.startsWith("| **"))
+    .map((line) =>
+      line
+        .split("|")
+        .slice(1, -1)
+        .map((cell) => cell.trim().replaceAll("**", "")),
+    );
+}
 
 /** Isolate Latin terms without changing the Arabic source text. */
 export function DirectionText({ children }: { children: ReactNode }) {
@@ -55,15 +70,7 @@ function ApproachesInfographic({ source }: { source: string }) {
     Sprout,
     Lightbulb,
   ];
-  const rows = source
-    .split("\n")
-    .filter((line) => line.startsWith("| **"))
-    .map((line) =>
-      line
-        .split("|")
-        .slice(1, -1)
-        .map((cell) => cell.trim().replaceAll("**", "")),
-    );
+  const rows = tableRows(source);
   return (
     <dl className="approaches-map">
       {rows.map(([label, definition], index) => {
@@ -88,13 +95,57 @@ function ApproachesInfographic({ source }: { source: string }) {
   );
 }
 
-export function Markdown({
-  text,
-  illustratedApproaches = false,
-}: {
-  text: string;
-  illustratedApproaches?: boolean;
-}) {
+function DistortionCards({ source }: { source: string }) {
+  return (
+    <dl className="distortion-grid">
+      {tableRows(source).map(([label, example], index) => {
+        const name = /^(.*) \((.*)\)$/.exec(label);
+        return (
+          <div className="distortion-card" key={label}>
+            <dt>
+              <h5>{name?.[1] ?? label}</h5>
+              {name?.[2] && (
+                <bdi className="card-term" dir="ltr">
+                  {name[2]}
+                </bdi>
+              )}
+            </dt>
+            <dd>
+              <DirectionText>{example}</DirectionText>
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
+}
+
+function ModelChain({ source }: { source: string }) {
+  const rows = tableRows(source);
+  return (
+    <ol className="model-chain" data-stages={rows.length}>
+      {rows.map(([stage, meaning, example]) => {
+        const [letter, term] = stage.split(" – ");
+        return (
+          <li className="model-stage" data-letter={letter} key={stage}>
+            <bdi className="stage-letter" dir="ltr">
+              {letter}
+            </bdi>
+            <h5>{meaning}</h5>
+            <bdi className="card-term" dir="ltr">
+              {term}
+            </bdi>
+            <p>
+              <DirectionText>{example}</DirectionText>
+            </p>
+          </li>
+        );
+      })}
+    </ol>
+  );
+}
+
+export function Markdown({ text, tableKind }: { text: string; tableKind?: TableKind }) {
   return (
     <div className="reading-text">
       <ReactMarkdown
@@ -129,15 +180,17 @@ export function Markdown({
               <DirectionText>{children}</DirectionText>
             </em>
           ),
-          table: ({ children }) =>
-            illustratedApproaches ? (
-              <ApproachesInfographic source={text} />
-            ) : (
+          table: ({ children }) => {
+            if (tableKind === "approaches") return <ApproachesInfographic source={text} />;
+            if (tableKind === "distortions") return <DistortionCards source={text} />;
+            if (tableKind === "model") return <ModelChain source={text} />;
+            return (
               // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide source tables.
               <div className="table-scroll" tabIndex={0}>
                 <table>{children}</table>
               </div>
-            ),
+            );
+          },
           th: ({ children }) => (
             <th scope="col">
               <DirectionText>{children}</DirectionText>

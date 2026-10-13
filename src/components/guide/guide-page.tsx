@@ -170,7 +170,15 @@ function Section({ section }: { section: GuideSection }) {
                 {(subsection !== undefined || (section.number !== 4 && section.number !== 5)) && (
                   <Markdown
                     text={subsection === "3.1" ? block.split("\n")[0] : block}
-                    illustratedApproaches={section.number === 2}
+                    tableKind={
+                      section.number === 2
+                        ? "approaches"
+                        : subsection === "4.2"
+                          ? "distortions"
+                          : subsection === "6.1" || subsection === "6.2"
+                            ? "model"
+                            : undefined
+                    }
                   />
                 )}
                 <SectionVisual number={section.number} subsection={subsection} />
