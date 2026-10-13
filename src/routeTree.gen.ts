@@ -10,33 +10,63 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ARouteImport } from './routes/a'
+import { Route as BRouteImport } from './routes/b'
+import { Route as CRouteImport } from './routes/c'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ARoute = ARouteImport.update({
+  id: '/a',
+  path: '/a',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BRoute = BRouteImport.update({
+  id: '/b',
+  path: '/b',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CRoute = CRouteImport.update({
+  id: '/c',
+  path: '/c',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/a': typeof ARoute
+  '/b': typeof BRoute
+  '/c': typeof CRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/a': typeof ARoute
+  '/b': typeof BRoute
+  '/c': typeof CRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/a': typeof ARoute
+  '/b': typeof BRoute
+  '/c': typeof CRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/a' | '/b' | '/c'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/a' | '/b' | '/c'
+  id: '__root__' | '/' | '/a' | '/b' | '/c'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ARoute: typeof ARoute
+  BRoute: typeof BRoute
+  CRoute: typeof CRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +78,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/a': {
+      id: '/a'
+      path: '/a'
+      fullPath: '/a'
+      preLoaderRoute: typeof ARouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/b': {
+      id: '/b'
+      path: '/b'
+      fullPath: '/b'
+      preLoaderRoute: typeof BRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/c': {
+      id: '/c'
+      path: '/c'
+      fullPath: '/c'
+      preLoaderRoute: typeof CRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ARoute: ARoute,
+  BRoute: BRoute,
+  CRoute: CRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

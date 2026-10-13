@@ -1,6 +1,5 @@
-import { TanStackDevtools } from "@tanstack/react-devtools";
+import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import appCss from "../styles.css?url";
 
@@ -15,7 +14,12 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "مدخل مبسّط إلى العلاج النفسي والعلاج المعرفي السلوكي",
+      },
+      {
+        name: "description",
+        content:
+          "دليل تعليمي عربي إلى العلاج النفسي والعلاج المعرفي السلوكي، مع أمثلة ورسوم توضيحية وتمارين اختيارية.",
       },
     ],
     links: [
@@ -30,23 +34,12 @@ export const Route = createRootRoute({
 
 function RootDocument({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="ar" dir="rtl" className="dark">
       <head>
         <HeadContent />
       </head>
       <body>
-        {children}
-        <TanStackDevtools
-          config={{
-            position: "bottom-right",
-          }}
-          plugins={[
-            {
-              name: "Tanstack Router",
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
+        <DirectionProvider direction="rtl">{children}</DirectionProvider>
         <Scripts />
       </body>
     </html>

@@ -3,6 +3,7 @@
   "style": "base-nova",
   "rsc": false,
   "tsx": true,
+  "rtl": true,
   "tailwind": {
     "config": "",
     "css": "src/styles.css",
