@@ -364,8 +364,6 @@ figure figcaption { font-size: 14px; color: var(--muted-foreground); line-height
   .table-scroll table { font-size: 15px; }
   .table-scroll td { min-width: 145px; padding: 13px 10px; }
   .waves { grid-template-columns: 1fr; gap: 20px; }
-  .waves li { display: grid; grid-template-columns: 35px 1fr; gap: 0 14px; }
-  .waves p { grid-column: 2; }
   .mobile-reading-position { padding-inline: 16px; }
 }
 html[lang="tr"] body { line-height: 1.75; }
