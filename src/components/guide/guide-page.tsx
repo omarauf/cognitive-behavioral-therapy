@@ -209,27 +209,11 @@ export function GuidePage() {
           <main className="guide-main">
             {guide.parts.map((part) => (
               <section id={part.id} className="guide-part" key={part.id}>
-                <header className="part-heading">
-                  <div className="part-title-row">
-                    <span className="part-number">
-                      {arabicNumber(part.number).padStart(2, "٠")}
-                    </span>
-                    <div>
-                      <h2>
-                        <DirectionText>{part.title}</DirectionText>
-                      </h2>
-                    </div>
-                  </div>
-                </header>
                 {part.sections.map((section) => (
                   <Section key={section.id} section={section} />
                 ))}
               </section>
             ))}
-            <section id="references" className="references">
-              <h2>مراجع موثوقة للقراءة والتوسع</h2>
-              <Markdown text={guide.references} />
-            </section>
           </main>
         </div>
         <footer className="site-footer">

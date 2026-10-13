@@ -9,8 +9,6 @@ export function SectionVisual({ number, subsection }: { number: number; subsecti
     case "5":
       return (
         <figure className="learning-demo">
-          <h4>الحلقة المفرغة للتجنب</h4>
-          <p className="demo-instruction">الموقف: يُطلب من شخص تقديم عرض.</p>
           <AvoidanceDiagram />
         </figure>
       );
