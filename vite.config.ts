@@ -13,7 +13,14 @@ const config = defineConfig({
     devtools(),
     nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        failOnError: true,
+        crawlLinks: false,
+      },
+      pages: [{ path: "/" }, { path: "/tr" }],
+    }),
     viteReact(),
   ],
 });

@@ -33,7 +33,9 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
-  const turkish = useRouterState({ select: (state) => /^\/tr\/?$/.test(state.location.pathname) });
+  const turkish = useRouterState({
+    select: (state) => state.matches.some((match) => match.routeId === "/tr"),
+  });
   const direction = turkish ? "ltr" : "rtl";
   return (
     <html lang={turkish ? "tr" : "ar"} dir={direction}>

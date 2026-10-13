@@ -375,6 +375,7 @@ html[lang="tr"] .stage-letter { text-align: start; }
 html[lang="tr"] .model-stage:not(:last-child)::after { content: '→'; }
 html[lang="tr"] .avoidance-flow li, html[lang="tr"] .avoidance-center { direction: ltr; }
 html[lang="tr"] .avoidance-flow strong { overflow-wrap: anywhere; }
+html[lang="tr"] .avoidance-flow p { line-height: 1.6; }
 html[lang="tr"] .mutual { font-size: 12px; overflow-wrap: anywhere; }
 html[lang="tr"] .guide .guide-intro h1 { font-size: clamp(32px, 3.5vw, 49px); line-height: 1.25; }
 @container (max-width: 700px) {
