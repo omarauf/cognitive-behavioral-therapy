@@ -1,7 +1,41 @@
 import source from "../../docs/CBT.md?raw";
 import { parseGuide } from "./guide-content";
 
-export const guide = parseGuide(source);
+const report = parseGuide(source);
+let sectionNumber = 0;
+
+// Apply the selected edition without altering the canonical report.
+const parts = report.parts
+  .filter((part) => part.number !== 5)
+  .map((part) => ({
+    ...part,
+    sections: part.sections
+      .filter((section) => section.number !== 5 && section.number !== 12)
+      .map((section) => {
+        const number = ++sectionNumber;
+        let subsectionNumber = 0;
+        const body = section.body
+          .split(/(?=^### )/m)
+          .filter((block) => !/^### (?:3\.2|6\.1|6\.2|9\.2) /.test(block))
+          .join("")
+          .replace(/^\*\*تمييز مهم:\*\*.*\n?/m, "")
+          .replace(/^ليس المطلوب حفظ أسماء التشوهات.*\n?/m, "")
+          .replace(/^### \d+\.\d+ /gm, () => `### ${number}.${++subsectionNumber} `);
+        return {
+          ...section,
+          id: `section-${number}`,
+          number,
+          title: section.number === 13 ? "الخوف من التحدث أمام الجمهور" : section.title,
+          body,
+          subsections: Array.from(body.matchAll(/^### (\d+\.\d+) (.+)$/gm), (match) => ({
+            id: `section-${match[1].replace(".", "-")}`,
+            title: `${match[1]} ${match[2]}`,
+          })),
+        };
+      }),
+  }));
+
+export const guide = { ...report, parts, sections: parts.flatMap((part) => part.sections) };
 
 export const educationalNote =
   "هذا دليل تعليمي تمهيدي وليس دليلًا سريريًا أو بديلًا عن تقييم معالج نفسي مؤهل. الأمثلة افتراضية لتوضيح المفاهيم، وليست وصفات علاجية للجميع.";
@@ -14,14 +48,6 @@ export const modelElements = [
   { id: "behavior", label: "السلوك", text: "الاعتذار عن العرض أو قراءته بسرعة دون تواصل بصري." },
 ] as const;
 
-export const abcdeSteps = [
-  { id: "A", label: "الحدث", text: "صديقي لم يرد." },
-  { id: "B", label: "الاعتقاد", text: "لا يهتم بي." },
-  { id: "C", label: "النتائج", text: "حزن وقلق." },
-  { id: "D", label: "مناقشة الاعتقاد", text: "هل يكفي التأخر لإثبات ذلك؟" },
-  { id: "E", label: "منظور أكثر فاعلية", text: "قد يكون مشغولًا؛ يمكنني التحقق بدل افتراض الأسوأ." },
-] as const;
-
 export const avoidanceSteps = [
   { id: "prediction", label: "توقع الفشل", text: "سأخطئ وسيسخر مني الجميع." },
   { id: "anxiety", label: "القلق", text: "قلق وتسارع نبضات القلب." },
@@ -31,78 +57,5 @@ export const avoidanceSteps = [
     id: "fear",
     label: "استمرار الخوف",
     text: "يفقد فرصة اختبار توقعه والتدرب؛ وقد يصبح العرض التالي أصعب.",
-  },
-] as const;
-
-export const beliefs = [
-  {
-    label: "الأفكار التلقائية",
-    definition: "أفكار سريعة تظهر عند المواقف، وقد تبدو حقائق دون فحص.",
-    example: "سأبدو غبيًا.",
-  },
-  {
-    label: "المعتقدات الوسيطة",
-    definition: "قواعد وافتراضات مثل «يجب» و«إذا... فـ».",
-    example: "إذا أخطأت، فسيفقد الآخرون احترامهم لي.",
-  },
-  {
-    label: "المعتقدات الجوهرية",
-    definition: "تصورات عميقة ومستمرة نسبيًا عن الذات أو الآخرين أو العالم.",
-    example: "أنا غير كفء.",
-  },
-] as const;
-
-export const thoughtFields = [
-  { label: "ماذا حدث؟", example: "لم أحصل على الوظيفة." },
-  { label: "ما الفكرة التلقائية؟", example: "أنا فاشل ولن أُقبل في أي مكان." },
-  { label: "ما المشاعر وشدتها؟", example: "حزن 80/100، قلق 70/100." },
-  { label: "ما الأدلة المؤيدة؟", example: "رُفض طلبي في هذه المقابلة." },
-  {
-    label: "ما الأدلة المعارضة أو المحدِّدة؟",
-    example: "لدي خبرات مناسبة، وقد نجحت في مقابلات أو مشاريع أخرى.",
-  },
-  {
-    label: "ما الفكرة الأكثر توازنًا؟",
-    example: "رُفضت في فرصة واحدة، ويمكنني التعلم والاستمرار في التقديم.",
-  },
-  { label: "ماذا تغيّر؟", example: "أُعيد تقييم شدة المشاعر؛ وقد تنخفض أو لا تنخفض فورًا." },
-] as const;
-
-export const exposureSteps = [
-  "شرح فكرة لشخص موثوق",
-  "شرح فكرة لفريق صغير",
-  "تقديم عرض أطول بحسب الحاجة",
-] as const;
-
-export const caseTechniques = [
-  {
-    id: "formulation",
-    label: "تصور الحالة",
-    text: "ربط الخبرة السابقة بالمعتقدات والتوقعات والسلوكيات، مع النظر إلى مهارات الشخص وبيئته وأسباب القلق الواقعية.",
-  },
-  {
-    id: "restructure",
-    label: "إعادة البناء المعرفي",
-    text: "مراجعة الأدلة: هل كل خطأ يؤدي فعلًا إلى السخرية؟ وهل الخطأ يعني عدم الكفاءة؟",
-  },
-  {
-    id: "experiment",
-    label: "تجربة سلوكية",
-    text: "تقديم جزء قصير في موقف مناسب ومراقبة ردود الفعل الفعلية ومقارنتها بالتوقع.",
-  },
-  {
-    id: "exposure",
-    label: "تعرض تدريجي",
-    text: "البدء بشرح فكرة لشخص موثوق، ثم لفريق صغير، ثم تقديم عرض أطول بحسب الحاجة.",
-  },
-  {
-    id: "skills",
-    label: "التدريب المهاري",
-    text: "التدرب على الافتتاحية وتنظيم الأفكار والإجابة عن الأسئلة.",
-  },
-  {
-    id: "review",
-    label: "خطة عمل ومراجعة",
-    text: "تسجيل ما توقعه وما حدث وما يريد تحسينه في المرة التالية.",
   },
 ] as const;

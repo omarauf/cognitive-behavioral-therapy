@@ -4,33 +4,20 @@ import { useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { educationalNote, guide } from "@/lib/guide";
-import { arabicNumber, type GuidePart, type GuideSection, shortTitle } from "@/lib/guide-content";
+import { arabicNumber, type GuideSection, shortTitle } from "@/lib/guide-content";
 import { cn } from "@/lib/utils";
-import { CognitiveDiagram } from "./diagrams";
+import { CognitiveDiagram, MessageExample } from "./diagrams";
 import { SectionVisual } from "./interactions";
 import { DirectionText, Markdown } from "./markdown";
 
 export type Design = "a" | "b" | "c";
 
-const annotations: Record<number, string> = {
-  2: "العلاج الأسري والجماعي يصفان أيضًا طريقة تقديم العلاج؛ أما ACT وDBT فلهما صلة بعائلة العلاجات المعرفية السلوكية، لكنهما ليسا مجرد تقنيتين داخل CBT التقليدي.",
-  3: "ليس تفكيرًا إيجابيًا إجباريًا، ولا إنكارًا للمشكلات الحقيقية، ولا لومًا للشخص على مشاعره أو ظروفه.",
-  4: "قد يغير السلوك المزاج، وقد تجعل مشاعر الخوف بعض الأفكار أكثر إلحاحًا، كما تؤثر البيئة والصحة والضغوط الواقعية في الجميع.",
-  5: "«سلبي» هنا لا يعني سيئًا أخلاقيًا؛ بل يعني إزالة شيء.",
-  6: "لا ينبغي التخلص من احتياطات السلامة الواقعية.",
-  7: "قد تشير E في الصياغات المختلفة لـREBT إلى المنظور الجديد الفعال أو أثره، وليس إلى مجرد «فكرة إيجابية».",
-  8: "الهدف هو الدقة والمرونة، وليس إنكار الحقائق المزعجة.",
-  9: "ليس المقصود مواجهة خطر حقيقي أو دفع الشخص إلى تجارب مؤذية. يُفضّل تنفيذ ERP بإشراف معالج مدرَّب.",
-  10: "أداة كتابية مختصرة لتطبيق إعادة البناء المعرفي، وليست نموذجًا علاجيًا مستقلًا.",
-  11: "ضعف الثقة بالنفس والشعور بالفشل ليسا بالضرورة تشخيصين نفسيين.",
-  12: "إذا لم تُنفذ الخطة، تُراجع أسباب ذلك وتُعدّل بدل استخدامها دليلًا على الفشل.",
-  13: "هذا المثال حالة افتراضية ولا يمثل تشخيصًا. لا يشترط أن يختفي القلق.",
-  14: "هذه فرضية قابلة للمراجعة وليست حقيقة ثابتة عن الشخص.",
-  15: "الانتكاسة المحتملة ليست إلغاءً لما تعلمه الشخص.",
-  16: "لا يوجد بروتوكول واحد يعالج الجميع.",
-  17: "الحدود مرنة. الأهم معرفة وظيفة المصطلح في السياق.",
-  18: "الهدف ليس إزالة الحزن والخوف من الحياة، وإنما زيادة القدرة على فهم التجارب النفسية والتعامل معها بمرونة وتحسين التصرف رغم الصعوبات.",
-};
+const chapterLabels = [
+  "مدخل إلى العلاج النفسي",
+  "الأسس النظرية",
+  "النماذج والتقنيات",
+  "الأدوات والتمارين",
+];
 
 function useReadingPosition() {
   const [active, setActive] = useState(1);
@@ -38,8 +25,12 @@ function useReadingPosition() {
     let frame = 0;
     const update = () => {
       const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-guide-section]"));
+      const chapters = document.querySelector<HTMLElement>(".chapter-strip");
+      const navigationHeight =
+        (document.querySelector(".site-header")?.clientHeight ?? 0) +
+        (chapters && getComputedStyle(chapters).position === "sticky" ? chapters.clientHeight : 0);
       const current = sections
-        .filter((section) => section.getBoundingClientRect().top <= 190)
+        .filter((section) => section.getBoundingClientRect().top <= navigationHeight + 32)
         .at(-1);
       setActive(current ? Number(current.dataset.guideSection) : 1);
       frame = 0;
@@ -111,8 +102,25 @@ function Contents({ active, onNavigate }: { active: number; onNavigate?: () => v
   );
 }
 
-function Header({ design, active, preview }: { design: Design; active: number; preview: boolean }) {
+function ContentsMenu({ active }: { active: number }) {
   const [open, setOpen] = useState(false);
+  return (
+    <Sheet open={open} onOpenChange={setOpen}>
+      <SheetTrigger render={<Button variant="outline" />}>
+        <Menu data-icon="inline-start" />
+        الفصول
+      </SheetTrigger>
+      <SheetContent side="right" className="contents-sheet" dir="rtl">
+        <SheetHeader>
+          <SheetTitle>فصول الدليل</SheetTitle>
+        </SheetHeader>
+        <Contents active={active} onNavigate={() => setOpen(false)} />
+      </SheetContent>
+    </Sheet>
+  );
+}
+
+function Header({ design, active, preview }: { design: Design; active: number; preview: boolean }) {
   return (
     <header className="site-header">
       <div className="header-inner">
@@ -143,18 +151,7 @@ function Header({ design, active, preview }: { design: Design; active: number; p
           <a href="#references">المراجع</a>
         </div>
         <div className="mobile-contents">
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger render={<Button variant="outline" />}>
-              <Menu data-icon="inline-start" />
-              الفصول
-            </SheetTrigger>
-            <SheetContent side="right" className="contents-sheet" dir="rtl">
-              <SheetHeader>
-                <SheetTitle>فصول الدليل</SheetTitle>
-              </SheetHeader>
-              <Contents active={active} onNavigate={() => setOpen(false)} />
-            </SheetContent>
-          </Sheet>
+          <ContentsMenu active={active} />
         </div>
       </div>
     </header>
@@ -165,7 +162,6 @@ function Introduction({ design }: { design: Design }) {
   return (
     <section className="guide-intro">
       <div className="intro-copy">
-        <p className="part-label">دليل تعليمي لغير المتخصصين</p>
         <h1>
           {design === "b" ? (
             <>
@@ -177,9 +173,9 @@ function Introduction({ design }: { design: Design }) {
             </>
           ) : (
             <>
-              مدخل مبسّط إلى
+              مدخل إلى العلاج النفسي
               <br />
-              <span>العلاج المعرفي السلوكي</span>
+              <span>والعلاج المعرفي السلوكي</span>
             </>
           )}
         </h1>
@@ -197,13 +193,16 @@ function Introduction({ design }: { design: Design }) {
             <ArrowDown data-icon="inline-end" />
           </a>
         </div>
-        <p className="intro-meta">
-          {arabicNumber(guide.parts.length)} أجزاء · {arabicNumber(guide.sections.length)} قسمًا
-        </p>
       </div>
       <div className="intro-visual">
-        <p className="part-label">النموذج المعرفي · مثال من الدليل</p>
-        <CognitiveDiagram compact />
+        {design === "c" ? (
+          <MessageExample />
+        ) : (
+          <>
+            <p className="part-label">النموذج المعرفي · مثال من الدليل</p>
+            <CognitiveDiagram compact />
+          </>
+        )}
       </div>
     </section>
   );
@@ -228,35 +227,7 @@ function PartIndex() {
   );
 }
 
-function ChapterLinks({ part }: { part: GuidePart }) {
-  const previous = guide.parts[part.number - 2];
-  const next = guide.parts[part.number];
-  return (
-    <nav className="chapter-links">
-      {previous ? (
-        <a href={`#${previous.id}`}>
-          <span>→</span>
-          {previous.title}
-        </a>
-      ) : (
-        <a href="#top">العودة إلى البداية</a>
-      )}
-      {next ? (
-        <a href={`#${next.id}`}>
-          {next.title}
-          <ArrowLeft />
-        </a>
-      ) : (
-        <a href="#references">
-          المراجع
-          <ArrowLeft />
-        </a>
-      )}
-    </nav>
-  );
-}
-
-function Section({ section, design }: { section: GuideSection; design: Design }) {
+function Section({ section }: { section: GuideSection }) {
   return (
     <section id={section.id} className="guide-section" data-guide-section={section.number}>
       <div className="section-heading">
@@ -270,17 +241,23 @@ function Section({ section, design }: { section: GuideSection; design: Design })
       </div>
       <div className="section-layout">
         <div className="section-body">
-          <Markdown text={section.body} />
-          <SectionVisual number={section.number} />
+          {section.body.split(/(?=^### )/m).map((block) => {
+            const subsection =
+              /^### (\d+\.\d+)/.exec(block)?.[1] ??
+              (block.startsWith("### ") ? "unnumbered" : undefined);
+            return (
+              <div className="content-block" key={block}>
+                {(subsection !== undefined || (section.number !== 4 && section.number !== 5)) && (
+                  <Markdown
+                    text={subsection === "3.1" ? block.split("\n")[0] : block}
+                    illustratedApproaches={section.number === 2}
+                  />
+                )}
+                <SectionVisual number={section.number} subsection={subsection} />
+              </div>
+            );
+          })}
         </div>
-        {design === "c" && annotations[section.number] && (
-          <aside className="section-annotation">
-            <h4>للتذكر</h4>
-            <p>
-              <DirectionText>{annotations[section.number]}</DirectionText>
-            </p>
-          </aside>
-        )}
       </div>
     </section>
   );
@@ -297,15 +274,17 @@ export function GuidePage({ design, preview = false }: { design: Design; preview
       <a href="#part-1" className="skip-link">
         انتقل إلى محتوى الدليل
       </a>
-      <Header design={design} active={active} preview={preview} />
+      {design !== "c" && <Header design={design} active={active} preview={preview} />}
       <div className="site-container">
         <Introduction design={design} />
         {design === "b" && <PartIndex />}
         {design === "c" && (
           <nav className="chapter-strip">
+            <ContentsMenu active={active} />
             {guide.parts.map((part) => (
               <a key={part.id} href={`#${part.id}`} data-active={part.id === currentPart.id}>
-                {arabicNumber(part.number)}. <DirectionText>{part.title}</DirectionText>
+                {arabicNumber(part.number)}.{" "}
+                <DirectionText>{chapterLabels[part.number - 1] ?? part.title}</DirectionText>
               </a>
             ))}
           </nav>
@@ -325,29 +304,23 @@ export function GuidePage({ design, preview = false }: { design: Design; preview
             </aside>
           )}
           <main className="guide-main">
-            <div className="source-intro">
-              <Markdown text={guide.introduction} />
-              <p className="educational-note">{educationalNote}</p>
-            </div>
             {guide.parts.map((part) => (
               <section id={part.id} className="guide-part" key={part.id}>
                 <header className="part-heading">
-                  <p className="part-label">الجزء {arabicNumber(part.number)}</p>
-                  <h2>
-                    <DirectionText>{part.title}</DirectionText>
-                  </h2>
-                  <nav className="part-sections">
-                    {part.sections.map((section) => (
-                      <a href={`#${section.id}`} key={section.id}>
-                        {arabicNumber(section.number)}. {shortTitle(section.title)}
-                      </a>
-                    ))}
-                  </nav>
+                  <div className="part-title-row">
+                    <span className="part-number">
+                      {arabicNumber(part.number).padStart(2, "٠")}
+                    </span>
+                    <div>
+                      <h2>
+                        <DirectionText>{part.title}</DirectionText>
+                      </h2>
+                    </div>
+                  </div>
                 </header>
                 {part.sections.map((section) => (
-                  <Section key={section.id} section={section} design={design} />
+                  <Section key={section.id} section={section} />
                 ))}
-                <ChapterLinks part={part} />
               </section>
             ))}
             <section id="references" className="references">

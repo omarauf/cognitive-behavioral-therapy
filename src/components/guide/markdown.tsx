@@ -1,3 +1,18 @@
+import {
+  Activity,
+  BookOpen,
+  Compass,
+  Footprints,
+  Heart,
+  History,
+  Lightbulb,
+  MessageCircle,
+  Network,
+  Scale,
+  Sprout,
+  Users,
+  Waypoints,
+} from "lucide-react";
 import { Children, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -23,7 +38,63 @@ export function DirectionText({ children }: { children: ReactNode }) {
   });
 }
 
-export function Markdown({ text }: { text: string }) {
+function ApproachesInfographic({ source }: { source: string }) {
+  const icons = [
+    Footprints,
+    MessageCircle,
+    Network,
+    History,
+    Heart,
+    Users,
+    Users,
+    Users,
+    Waypoints,
+    BookOpen,
+    Compass,
+    Scale,
+    Sprout,
+    Lightbulb,
+  ];
+  const rows = source
+    .split("\n")
+    .filter((line) => line.startsWith("| **"))
+    .map((line) =>
+      line
+        .split("|")
+        .slice(1, -1)
+        .map((cell) => cell.trim().replaceAll("**", "")),
+    );
+  return (
+    <dl className="approaches-map">
+      {rows.map(([label, definition], index) => {
+        const Icon = icons[index] ?? Activity;
+        return (
+          <div key={label}>
+            <dt>
+              <span className="approach-icon">
+                <Icon />
+              </span>
+              <strong>
+                <DirectionText>{label}</DirectionText>
+              </strong>
+            </dt>
+            <dd>
+              <DirectionText>{definition}</DirectionText>
+            </dd>
+          </div>
+        );
+      })}
+    </dl>
+  );
+}
+
+export function Markdown({
+  text,
+  illustratedApproaches = false,
+}: {
+  text: string;
+  illustratedApproaches?: boolean;
+}) {
   return (
     <div className="reading-text">
       <ReactMarkdown
@@ -58,12 +129,15 @@ export function Markdown({ text }: { text: string }) {
               <DirectionText>{children}</DirectionText>
             </em>
           ),
-          table: ({ children }) => (
-            // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide source tables.
-            <div className="table-scroll" tabIndex={0}>
-              <table>{children}</table>
-            </div>
-          ),
+          table: ({ children }) =>
+            illustratedApproaches ? (
+              <ApproachesInfographic source={text} />
+            ) : (
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: Keyboard users need to scroll wide source tables.
+              <div className="table-scroll" tabIndex={0}>
+                <table>{children}</table>
+              </div>
+            ),
           th: ({ children }) => (
             <th scope="col">
               <DirectionText>{children}</DirectionText>
