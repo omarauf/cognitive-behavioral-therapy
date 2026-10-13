@@ -1,16 +1,13 @@
-import { Link } from "@tanstack/react-router";
-import { ArrowDown, ArrowLeft, ArrowUp, BookOpen, Menu } from "lucide-react";
+import { ArrowDown, ArrowUp, BookOpen, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { educationalNote, guide } from "@/lib/guide";
 import { arabicNumber, type GuideSection, shortTitle } from "@/lib/guide-content";
 import { cn } from "@/lib/utils";
-import { CognitiveDiagram, MessageExample } from "./diagrams";
+import { MessageExample } from "./diagrams";
 import { SectionVisual } from "./interactions";
 import { DirectionText, Markdown } from "./markdown";
-
-export type Design = "a" | "b" | "c";
 
 const chapterLabels = [
   "مدخل إلى العلاج النفسي",
@@ -27,8 +24,7 @@ function useReadingPosition() {
       const sections = Array.from(document.querySelectorAll<HTMLElement>("[data-guide-section]"));
       const chapters = document.querySelector<HTMLElement>(".chapter-strip");
       const navigationHeight =
-        (document.querySelector(".site-header")?.clientHeight ?? 0) +
-        (chapters && getComputedStyle(chapters).position === "sticky" ? chapters.clientHeight : 0);
+        chapters && getComputedStyle(chapters).position === "sticky" ? chapters.clientHeight : 0;
       const current = sections
         .filter((section) => section.getBoundingClientRect().top <= navigationHeight + 32)
         .at(-1);
@@ -120,64 +116,14 @@ function ContentsMenu({ active }: { active: number }) {
   );
 }
 
-function Header({ design, active, preview }: { design: Design; active: number; preview: boolean }) {
-  return (
-    <header className="site-header">
-      <div className="header-inner">
-        <a href="#top" className="brand">
-          <span className="brand-mark">
-            <bdi dir="ltr">CBT</bdi>
-          </span>
-          <span>العلاج المعرفي السلوكي</span>
-        </a>
-        {preview && (
-          <nav className="design-switch">
-            <span>التصميم</span>
-            {(["a", "b", "c"] as const).map((option) => (
-              <Link
-                key={option}
-                to={`/${option}`}
-                className={cn({ selected: option === design })}
-                title={`التصميم ${option.toUpperCase()}`}
-              >
-                <bdi dir="ltr">{option.toUpperCase()}</bdi>
-              </Link>
-            ))}
-          </nav>
-        )}
-        <div className="header-reading-links">
-          <a href="#part-1">الدليل</a>
-          <a href="#section-4">النماذج</a>
-          <a href="#references">المراجع</a>
-        </div>
-        <div className="mobile-contents">
-          <ContentsMenu active={active} />
-        </div>
-      </div>
-    </header>
-  );
-}
-
-function Introduction({ design }: { design: Design }) {
+function Introduction() {
   return (
     <section className="guide-intro">
       <div className="intro-copy">
         <h1>
-          {design === "b" ? (
-            <>
-              فهم الأفكار
-              <br />
-              والمشاعر
-              <br />
-              <span>والسلوكيات.</span>
-            </>
-          ) : (
-            <>
-              مدخل إلى العلاج النفسي
-              <br />
-              <span>والعلاج المعرفي السلوكي</span>
-            </>
-          )}
+          مدخل إلى العلاج النفسي
+          <br />
+          <span>والعلاج المعرفي السلوكي</span>
         </h1>
         <p className="intro-lead">
           يشرح الأسس النظرية للعلاج المعرفي السلوكي، ونماذجه وتقنياته وتطبيقاته العملية، بلغة واضحة
@@ -195,35 +141,9 @@ function Introduction({ design }: { design: Design }) {
         </div>
       </div>
       <div className="intro-visual">
-        {design === "c" ? (
-          <MessageExample />
-        ) : (
-          <>
-            <p className="part-label">النموذج المعرفي · مثال من الدليل</p>
-            <CognitiveDiagram compact />
-          </>
-        )}
+        <MessageExample />
       </div>
     </section>
-  );
-}
-
-function PartIndex() {
-  return (
-    <nav className="atlas-index">
-      {guide.parts.map((part) => (
-        <a key={part.id} href={`#${part.id}`}>
-          <span className="index-number">{arabicNumber(part.number)}</span>
-          <div>
-            <h2>
-              <DirectionText>{part.title}</DirectionText>
-            </h2>
-            <p>{part.sections.map((section) => arabicNumber(section.number)).join(" · ")}</p>
-          </div>
-          <ArrowLeft />
-        </a>
-      ))}
-    </nav>
   );
 }
 
@@ -263,46 +183,29 @@ function Section({ section }: { section: GuideSection }) {
   );
 }
 
-export function GuidePage({ design, preview = false }: { design: Design; preview?: boolean }) {
+export function GuidePage() {
   const active = useReadingPosition();
   const currentPart =
     guide.parts.find((part) => part.sections.some((section) => section.number === active)) ??
     guide.parts[0];
   const currentSection = guide.sections[active - 1];
   return (
-    <div className={cn("guide", `design-${design}`)} id="top">
+    <div className="guide" id="top">
       <a href="#part-1" className="skip-link">
         انتقل إلى محتوى الدليل
       </a>
-      {design !== "c" && <Header design={design} active={active} preview={preview} />}
       <div className="site-container">
-        <Introduction design={design} />
-        {design === "b" && <PartIndex />}
-        {design === "c" && (
-          <nav className="chapter-strip">
-            <ContentsMenu active={active} />
-            {guide.parts.map((part) => (
-              <a key={part.id} href={`#${part.id}`} data-active={part.id === currentPart.id}>
-                {arabicNumber(part.number)}.{" "}
-                <DirectionText>{chapterLabels[part.number - 1] ?? part.title}</DirectionText>
-              </a>
-            ))}
-          </nav>
-        )}
+        <Introduction />
+        <nav className="chapter-strip">
+          <ContentsMenu active={active} />
+          {guide.parts.map((part) => (
+            <a key={part.id} href={`#${part.id}`} data-active={part.id === currentPart.id}>
+              {arabicNumber(part.number)}.{" "}
+              <DirectionText>{chapterLabels[part.number - 1] ?? part.title}</DirectionText>
+            </a>
+          ))}
+        </nav>
         <div className="reading-layout">
-          {design !== "c" && (
-            <aside className="desktop-toc">
-              <Contents active={active} />
-              <div className="reading-position">
-                <span>
-                  القسم {arabicNumber(active)} من {arabicNumber(guide.sections.length)}
-                </span>
-                <meter min={0} max={guide.sections.length} value={active}>
-                  القسم {arabicNumber(active)}
-                </meter>
-              </div>
-            </aside>
-          )}
           <main className="guide-main">
             {guide.parts.map((part) => (
               <section id={part.id} className="guide-part" key={part.id}>

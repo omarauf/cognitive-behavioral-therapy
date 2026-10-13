@@ -88,9 +88,9 @@ export function AvoidanceDiagram() {
   );
 }
 
-export function CognitiveDiagram({ compact = false }: { compact?: boolean }) {
+export function CognitiveDiagram() {
   return (
-    <figure className={compact ? "cognitive-diagram compact" : "cognitive-diagram"}>
+    <figure className="cognitive-diagram">
       <div className="situation">
         <div>
           <span>الموقف</span>
