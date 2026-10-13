@@ -2,19 +2,12 @@ import { ArrowDown, ArrowUp, BookOpen, Menu } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { educationalNote, guide } from "@/lib/guide";
-import { arabicNumber, type GuideSection, shortTitle } from "@/lib/guide-content";
+import { type GuideSection, shortTitle } from "@/lib/guide-content";
+import { useGuideContent } from "@/lib/guide-locale";
 import { cn } from "@/lib/utils";
 import { MessageExample } from "./diagrams";
 import { SectionVisual } from "./interactions";
 import { DirectionText, Markdown } from "./markdown";
-
-const chapterLabels = [
-  "مدخل إلى العلاج النفسي",
-  "الأسس النظرية",
-  "النماذج والتقنيات",
-  "الأدوات والتمارين",
-];
 
 function useReadingPosition() {
   const [active, setActive] = useState(1);
@@ -47,9 +40,10 @@ function useReadingPosition() {
 }
 
 function Contents({ active, onNavigate }: { active: number; onNavigate?: () => void }) {
+  const { guide, ui, formatNumber } = useGuideContent();
   return (
     <nav className="contents">
-      <h2>محتويات الدليل</h2>
+      <h2>{ui.contents}</h2>
       <ol>
         {guide.parts.map((part) => (
           <li
@@ -59,7 +53,7 @@ function Contents({ active, onNavigate }: { active: number; onNavigate?: () => v
             })}
           >
             <a className="toc-part-title" href={`#${part.id}`} onClick={onNavigate}>
-              <span>{arabicNumber(part.number)}</span>
+              <span>{formatNumber(part.number)}</span>
               <DirectionText>{part.title}</DirectionText>
             </a>
             <ol>
@@ -70,7 +64,7 @@ function Contents({ active, onNavigate }: { active: number; onNavigate?: () => v
                     data-active={active === section.number}
                     onClick={onNavigate}
                   >
-                    <span>{arabicNumber(section.number)}.</span>
+                    <span>{formatNumber(section.number)}.</span>
                     {shortTitle(section.title)}
                   </a>
                   {active === section.number && section.subsections.length > 0 && (
@@ -92,23 +86,29 @@ function Contents({ active, onNavigate }: { active: number; onNavigate?: () => v
       </ol>
       {/* biome-ignore lint/a11y/useValidAnchor: This navigates to the references and also closes the mobile drawer. */}
       <a className="toc-references" href="#references" onClick={() => onNavigate?.()}>
-        المراجع وحدود الاستخدام
+        {ui.references}
       </a>
     </nav>
   );
 }
 
 function ContentsMenu({ active }: { active: number }) {
+  const { ui, direction } = useGuideContent();
   const [open, setOpen] = useState(false);
   return (
     <Sheet open={open} onOpenChange={setOpen}>
       <SheetTrigger render={<Button variant="outline" />}>
         <Menu data-icon="inline-start" />
-        الفصول
+        {ui.chapters}
       </SheetTrigger>
-      <SheetContent side="right" className="contents-sheet" dir="rtl">
+      <SheetContent
+        side={direction === "rtl" ? "right" : "left"}
+        className="contents-sheet"
+        dir={direction}
+        closeLabel={ui.close}
+      >
         <SheetHeader>
-          <SheetTitle>فصول الدليل</SheetTitle>
+          <SheetTitle>{ui.guideChapters}</SheetTitle>
         </SheetHeader>
         <Contents active={active} onNavigate={() => setOpen(false)} />
       </SheetContent>
@@ -117,25 +117,23 @@ function ContentsMenu({ active }: { active: number }) {
 }
 
 function Introduction() {
+  const { ui } = useGuideContent();
   return (
     <section className="guide-intro">
       <div className="intro-copy">
         <h1>
-          مدخل إلى العلاج النفسي
+          {ui.title}
           <br />
-          <span>والعلاج المعرفي السلوكي</span>
+          <span>{ui.titleAccent}</span>
         </h1>
-        <p className="intro-lead">
-          يشرح الأسس النظرية للعلاج المعرفي السلوكي، ونماذجه وتقنياته وتطبيقاته العملية، بلغة واضحة
-          وأمثلة مترابطة.
-        </p>
+        <p className="intro-lead">{ui.lead}</p>
         <div className="intro-actions">
           <a className={buttonVariants()} href="#part-1">
             <BookOpen data-icon="inline-start" />
-            ابدأ القراءة
+            {ui.start}
           </a>
           <a className={buttonVariants({ variant: "ghost" })} href="#section-4">
-            استكشف النماذج
+            {ui.models}
             <ArrowDown data-icon="inline-end" />
           </a>
         </div>
@@ -148,14 +146,17 @@ function Introduction() {
 }
 
 function Section({ section }: { section: GuideSection }) {
+  const { ui, language, formatNumber } = useGuideContent();
   return (
     <section id={section.id} className="guide-section" data-guide-section={section.number}>
       <div className="section-heading">
-        <span className="section-number">{arabicNumber(section.number).padStart(2, "٠")}</span>
+        <span className="section-number">
+          {formatNumber(section.number).padStart(2, language === "ar" ? "٠" : "0")}
+        </span>
         <h3>
           <DirectionText>{section.title}</DirectionText>
         </h3>
-        <a className="section-permalink" href={`#${section.id}`} title="رابط هذا القسم">
+        <a className="section-permalink" href={`#${section.id}`} title={ui.permalink}>
           #
         </a>
       </div>
@@ -192,6 +193,7 @@ function Section({ section }: { section: GuideSection }) {
 }
 
 export function GuidePage() {
+  const { guide, ui, educationalNote, chapterLabels, formatNumber } = useGuideContent();
   const active = useReadingPosition();
   const currentPart =
     guide.parts.find((part) => part.sections.some((section) => section.number === active)) ??
@@ -200,7 +202,7 @@ export function GuidePage() {
   return (
     <div className="guide" id="top">
       <a href="#part-1" className="skip-link">
-        انتقل إلى محتوى الدليل
+        {ui.skip}
       </a>
       <div className="site-container">
         <Introduction />
@@ -208,7 +210,7 @@ export function GuidePage() {
           <ContentsMenu active={active} />
           {guide.parts.map((part) => (
             <a key={part.id} href={`#${part.id}`} data-active={part.id === currentPart.id}>
-              {arabicNumber(part.number)}.{" "}
+              {formatNumber(part.number)}.{" "}
               <DirectionText>{chapterLabels[part.number - 1] ?? part.title}</DirectionText>
             </a>
           ))}
@@ -224,17 +226,17 @@ export function GuidePage() {
             ))}
           </main>
         </div>
-        <footer className="site-footer">
+        <footer className="site-footer" id="references">
           <p>{educationalNote}</p>
           <a href="#top">
-            العودة إلى البداية
+            {ui.back}
             <ArrowUp />
           </a>
         </footer>
       </div>
       <div className="mobile-reading-position">
         <span>
-          القسم {arabicNumber(active)} / {arabicNumber(guide.sections.length)}
+          {ui.section} {formatNumber(active)} / {formatNumber(guide.sections.length)}
         </span>
         <a href={`#${currentSection.id}`}>{shortTitle(currentSection.title)}</a>
       </div>

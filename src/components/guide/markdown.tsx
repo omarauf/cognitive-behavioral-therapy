@@ -17,7 +17,7 @@ import { Children, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Separator } from "@/components/ui/separator";
-import { arabicNumber } from "@/lib/guide-content";
+import { useGuideContent } from "@/lib/guide-locale";
 
 type TableKind = "approaches" | "distortions" | "model";
 
@@ -35,6 +35,8 @@ function tableRows(source: string) {
 
 /** Isolate Latin terms without changing the Arabic source text. */
 export function DirectionText({ children }: { children: ReactNode }) {
+  const { direction } = useGuideContent();
+  if (direction === "ltr") return children;
   return Children.map(children, (child) => {
     if (typeof child !== "string") return child;
     const fragments: ReactNode[] = [];
@@ -98,7 +100,7 @@ function ApproachesInfographic({ source }: { source: string }) {
 function DistortionCards({ source }: { source: string }) {
   return (
     <dl className="distortion-grid">
-      {tableRows(source).map(([label, example], index) => {
+      {tableRows(source).map(([label, example]) => {
         const name = /^(.*) \((.*)\)$/.exec(label);
         return (
           <div className="distortion-card" key={label}>
@@ -132,9 +134,11 @@ function ModelChain({ source }: { source: string }) {
               {letter}
             </bdi>
             <h5>{meaning}</h5>
-            <bdi className="card-term" dir="ltr">
-              {term}
-            </bdi>
+            {term && (
+              <bdi className="card-term" dir="ltr">
+                {term}
+              </bdi>
+            )}
             <p>
               <DirectionText>{example}</DirectionText>
             </p>

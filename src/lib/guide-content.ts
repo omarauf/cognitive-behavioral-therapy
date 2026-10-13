@@ -24,15 +24,16 @@ export function parseGuide(source: string) {
   let readingReferences = false;
 
   for (const line of lines) {
-    if (line.startsWith("# ") && !line.startsWith("# الجزء")) {
+    const partHeading = /^# (?:الجزء [^:]+|Bölüm \d+):\s*(.+)$/.exec(line);
+    if (line.startsWith("# ") && !partHeading) {
       title = line.slice(2);
       continue;
     }
-    if (line.startsWith("# الجزء")) {
+    if (partHeading) {
       parts.push({
         id: `part-${parts.length + 1}`,
         number: parts.length + 1,
-        title: line.replace(/^# الجزء [^:]+:\s*/, ""),
+        title: partHeading[1],
         sections: [],
       });
       section = undefined;

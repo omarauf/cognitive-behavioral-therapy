@@ -1,5 +1,5 @@
 import { DirectionProvider } from "@base-ui/react/direction-provider";
-import { createRootRoute, HeadContent, Scripts } from "@tanstack/react-router";
+import { createRootRoute, HeadContent, Scripts, useRouterState } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
 
@@ -33,13 +33,15 @@ export const Route = createRootRoute({
 });
 
 function RootDocument({ children }: { children: React.ReactNode }) {
+  const turkish = useRouterState({ select: (state) => /^\/tr\/?$/.test(state.location.pathname) });
+  const direction = turkish ? "ltr" : "rtl";
   return (
-    <html lang="ar" dir="rtl">
+    <html lang={turkish ? "tr" : "ar"} dir={direction}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <DirectionProvider direction="rtl">{children}</DirectionProvider>
+        <DirectionProvider direction={direction}>{children}</DirectionProvider>
         <Scripts />
       </body>
     </html>

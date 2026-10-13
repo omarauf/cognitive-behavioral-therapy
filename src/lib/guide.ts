@@ -54,14 +54,6 @@ export const guide = { ...report, parts, sections: parts.flatMap((part) => part.
 export const educationalNote =
   "هذا دليل تعليمي تمهيدي وليس دليلًا سريريًا أو بديلًا عن تقييم معالج نفسي مؤهل. الأمثلة افتراضية لتوضيح المفاهيم، وليست وصفات علاجية للجميع.";
 
-export const modelElements = [
-  { id: "situation", label: "الموقف", text: "طُلب مني تقديم عرض أمام الزملاء." },
-  { id: "thought", label: "الفكرة", text: "سأخطئ وسيعتقد الجميع أنني غير كفء." },
-  { id: "emotion", label: "المشاعر", text: "خوف وحرج." },
-  { id: "body", label: "الجسم", text: "تسارع نبضات القلب وتعرق اليدين." },
-  { id: "behavior", label: "السلوك", text: "الاعتذار عن العرض أو قراءته بسرعة دون تواصل بصري." },
-] as const;
-
 export const avoidanceSteps = [
   { id: "prediction", label: "توقع الفشل", text: "سأخطئ وسيسخر مني الجميع." },
   { id: "anxiety", label: "القلق", text: "قلق وتسارع نبضات القلب." },

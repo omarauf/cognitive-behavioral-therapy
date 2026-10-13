@@ -4,6 +4,9 @@
 @import '@fontsource/ibm-plex-sans-arabic/latin-400.css';
 @import '@fontsource/ibm-plex-sans-arabic/latin-600.css';
 @import '@fontsource/ibm-plex-sans-arabic/latin-700.css';
+@import '@fontsource/ibm-plex-sans-arabic/latin-ext-400.css';
+@import '@fontsource/ibm-plex-sans-arabic/latin-ext-600.css';
+@import '@fontsource/ibm-plex-sans-arabic/latin-ext-700.css';
 @import 'tailwindcss';
 @import 'tw-animate-css';
 @custom-variant dark (&:is(.dark *));
@@ -270,10 +273,14 @@ figure figcaption { font-size: 14px; color: var(--muted-foreground); line-height
 .avoidance-flow p { font-size: 13px; line-height: 1.8; color: var(--muted-foreground); margin-top: 8px; }
 .avoidance-center { position: absolute; left: 50%; top: 47%; transform: translate(-50%, -50%); width: 23%; text-align: center; color: var(--primary-hover); font-size: 18px; line-height: 1.8; direction: rtl; }
 .avoidance-details { display: none; }
+.avoidance-short-label { display: none; }
 @container (max-width: 600px) {
   .avoidance-flow li { padding: 6px; }
   .avoidance-flow strong { font-size: clamp(11px, 2.7cqi, 18px); }
   .avoidance-flow p { display: none; }
+  .avoidance-full-label { display: none; }
+  .avoidance-short-label { display: inline; }
+  html[lang="tr"] .avoidance-flow strong { font-size: clamp(9px, 2.7cqi, 18px); }
   .avoidance-center { font-size: clamp(11px, 2.7cqi, 18px); }
   .avoidance-details { display: block; margin-top: 16px; }
   .avoidance-details > div { border-top: 1px solid var(--border); padding-block: 12px; }
@@ -360,6 +367,33 @@ figure figcaption { font-size: 14px; color: var(--muted-foreground); line-height
   .waves li { display: grid; grid-template-columns: 35px 1fr; gap: 0 14px; }
   .waves p { grid-column: 2; }
   .mobile-reading-position { padding-inline: 16px; }
+}
+html[lang="tr"] body { line-height: 1.75; }
+html[lang="tr"] .reading-text ol { list-style-type: decimal; }
+html[lang="tr"] .reading-text .model-chain { list-style-type: none; }
+html[lang="tr"] .stage-letter { text-align: start; }
+html[lang="tr"] .model-stage:not(:last-child)::after { content: '→'; }
+html[lang="tr"] .avoidance-flow li, html[lang="tr"] .avoidance-center { direction: ltr; }
+html[lang="tr"] .avoidance-flow strong { overflow-wrap: anywhere; }
+html[lang="tr"] .mutual { font-size: 12px; overflow-wrap: anywhere; }
+html[lang="tr"] .guide .guide-intro h1 { font-size: clamp(32px, 3.5vw, 49px); line-height: 1.25; }
+@container (max-width: 700px) {
+  html[lang="tr"] .avoidance-flow p, html[lang="tr"] .avoidance-full-label { display: none; }
+  html[lang="tr"] .avoidance-short-label { display: inline; }
+  html[lang="tr"] .avoidance-details { display: block; margin-top: 16px; }
+  html[lang="tr"] .avoidance-details > div { border-top: 1px solid var(--border); padding-block: 12px; }
+  html[lang="tr"] .avoidance-details dt { font-size: 16px; font-weight: 600; }
+  html[lang="tr"] .avoidance-details dd { font-size: 15px; line-height: 1.9; color: var(--muted-foreground); margin: 5px 0 0; }
+}
+@media (max-width: 1000px) {
+  html[lang="tr"] .model-chain[data-stages="5"] .model-stage:not(:last-child)::after { content: '↓'; }
+}
+@media (max-width: 700px) {
+  html[lang="tr"] .model-chain .model-stage:not(:last-child)::after { content: '↓'; }
+}
+@media (max-width: 480px) {
+  html[lang="tr"] .guide .guide-intro h1 { font-size: 31px; }
+  html[lang="tr"] .mutual { font-size: 9px; padding: 6px; }
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

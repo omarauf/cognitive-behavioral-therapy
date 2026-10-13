@@ -1,9 +1,10 @@
 import { MessageSquare } from "lucide-react";
 import { useId } from "react";
-import { avoidanceSteps, modelElements } from "@/lib/guide";
+import { useGuideContent } from "@/lib/guide-locale";
 import { DirectionText } from "./markdown";
 
 export function MessageExample() {
+  const { message } = useGuideContent();
   return (
     <figure className="message-example">
       <div className="message-event">
@@ -11,33 +12,31 @@ export function MessageExample() {
           <MessageSquare />
         </span>
         <div>
-          <span className="example-label">مثال من الدليل</span>
-          <h2>لم يرد صديق على رسالة.</h2>
+          <span className="example-label">{message.label}</span>
+          <h2>{message.event}</h2>
         </div>
       </div>
       <div className="message-branches">
         <div>
           <span className="branch-marker" />
-          <span className="example-label">تفسير</span>
-          <h3>«هو لا يهتم بي»</h3>
-          <p>حزن وانسحاب.</p>
+          <span className="example-label">{message.interpretation}</span>
+          <h3>{message.first}</h3>
+          <p>{message.firstResult}</p>
         </div>
         <div>
           <span className="branch-marker" />
-          <span className="example-label">تفسير آخر</span>
-          <h3>«قد يكون مشغولًا»</h3>
-          <p>انتظار.</p>
+          <span className="example-label">{message.alternative}</span>
+          <h3>{message.second}</h3>
+          <p>{message.secondResult}</p>
         </div>
       </div>
-      <figcaption>
-        ليس معنى ذلك أن كل ألم نفسي سببه التفكير، بل أن طريقة تفسير الحدث قد تؤثر في الاستجابة إلى
-        جانب الحدث نفسه والظروف الواقعية.
-      </figcaption>
+      <figcaption>{message.caption}</figcaption>
     </figure>
   );
 }
 
 export function AvoidanceDiagram() {
+  const { avoidanceSteps, avoidanceTitle } = useGuideContent();
   const arrowId = useId();
   return (
     <div className="avoidance-diagram">
@@ -69,12 +68,19 @@ export function AvoidanceDiagram() {
         <ol className="avoidance-flow">
           {avoidanceSteps.map((step) => (
             <li key={step.id}>
-              <strong>{step.label}</strong>
+              <strong>
+                <span className={step.shortLabel ? "avoidance-full-label" : undefined}>
+                  {step.label}
+                </span>
+                {step.shortLabel && (
+                  <span className="avoidance-short-label">{step.shortLabel}</span>
+                )}
+              </strong>
               <p>{step.text}</p>
             </li>
           ))}
         </ol>
-        <span className="avoidance-center">الحلقة المفرغة للتجنب</span>
+        <span className="avoidance-center">{avoidanceTitle}</span>
       </div>
       <dl className="avoidance-details">
         {avoidanceSteps.map((step) => (
@@ -89,38 +95,39 @@ export function AvoidanceDiagram() {
 }
 
 export function CognitiveDiagram() {
+  const { cognitive } = useGuideContent();
   return (
     <figure className="cognitive-diagram">
       <div className="situation">
         <div>
-          <span>الموقف</span>
-          <strong>{modelElements[0].text}</strong>
+          <span>{cognitive.situation}</span>
+          <strong>{cognitive.event}</strong>
         </div>
       </div>
       <div className="cognitive-network">
         <div className="model-node">
-          <span>الأفكار والتفسيرات</span>
-          <strong>«سأخطئ»</strong>
-          <p>وسيعتقد الجميع أنني غير كفء.</p>
+          <span>{cognitive.thoughts}</span>
+          <strong>{cognitive.thought}</strong>
+          <p>{cognitive.thoughtDetail}</p>
         </div>
         <span className="connection">↔</span>
         <div className="model-node">
-          <span>المشاعر</span>
-          <strong>خوف وحرج</strong>
+          <span>{cognitive.feelings}</span>
+          <strong>{cognitive.emotion}</strong>
         </div>
         <span className="connection vertical">↕</span>
-        <span className="mutual">تأثير متبادل</span>
+        <span className="mutual">{cognitive.mutual}</span>
         <span className="connection vertical">↕</span>
         <div className="model-node">
-          <span>السلوك</span>
-          <strong>الاعتذار عن العرض</strong>
-          <p>أو قراءته بسرعة دون تواصل بصري.</p>
+          <span>{cognitive.behavior}</span>
+          <strong>{cognitive.action}</strong>
+          <p>{cognitive.actionDetail}</p>
         </div>
         <span className="connection">↔</span>
         <div className="model-node">
-          <span>الجسم</span>
-          <strong>تسارع النبض</strong>
-          <p>وتعرق اليدين.</p>
+          <span>{cognitive.body}</span>
+          <strong>{cognitive.response}</strong>
+          <p>{cognitive.responseDetail}</p>
         </div>
       </div>
     </figure>
@@ -128,23 +135,7 @@ export function CognitiveDiagram() {
 }
 
 export function WavesDiagram() {
-  const waves = [
-    {
-      title: "الموجة الأولى: السلوكية",
-      period: "الخمسينيات والستينيات",
-      text: "انطلقت من نظريات التعلم، وركزت على التعزيز والتعرض وتغيير السلوك.",
-    },
-    {
-      title: "الموجة الثانية: المعرفية السلوكية",
-      period: "الستينيات والسبعينيات",
-      text: "أضافت دور الأفكار والمعتقدات إلى جانب السلوك. طوّر آرون بيك (Aaron Beck) العلاج المعرفي، وألبرت إليس (Albert Ellis) العلاج العقلاني الانفعالي السلوكي (REBT).",
-    },
-    {
-      title: "الموجة الثالثة: المقاربات السياقية والقبول",
-      period: "العقود اللاحقة",
-      text: "اهتمت بالقبول واليقظة الذهنية والقيم والمرونة النفسية، ومن أمثلتها ACT وDBT. تتداخل الموجات؛ ليست حدودًا علمية صارمة ولا تستبدل ما قبلها بالكامل.",
-    },
-  ];
+  const { waves } = useGuideContent();
   return (
     <div className="waves-diagram">
       <ol className="waves">
