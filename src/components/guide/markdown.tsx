@@ -13,7 +13,7 @@ import {
   Users,
   Waypoints,
 } from "lucide-react";
-import { Children, type ReactNode } from "react";
+import { Children, memo, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { Separator } from "@/components/ui/separator";
@@ -74,7 +74,7 @@ function ApproachesInfographic({ source }: { source: string }) {
   ];
   const rows = tableRows(source);
   return (
-    <dl className="approaches-map">
+    <dl className="approaches-map reveal">
       {rows.map(([label, definition], index) => {
         const Icon = icons[index] ?? Activity;
         return (
@@ -99,7 +99,7 @@ function ApproachesInfographic({ source }: { source: string }) {
 
 function DistortionCards({ source }: { source: string }) {
   return (
-    <dl className="distortion-grid">
+    <dl className="distortion-grid reveal">
       {tableRows(source).map(([label, example]) => {
         const name = /^(.*) \((.*)\)$/.exec(label);
         return (
@@ -125,7 +125,7 @@ function DistortionCards({ source }: { source: string }) {
 function ModelChain({ source }: { source: string }) {
   const rows = tableRows(source);
   return (
-    <ol className="model-chain" data-stages={rows.length}>
+    <ol className="model-chain reveal" data-stages={rows.length}>
       {rows.map(([stage, meaning, example]) => {
         const [letter, term] = stage.split(" – ");
         return (
@@ -149,7 +149,14 @@ function ModelChain({ source }: { source: string }) {
   );
 }
 
-export function Markdown({ text, tableKind }: { text: string; tableKind?: TableKind }) {
+/** Memoized so parent re-renders (reading position) don't remount the inline renderers below. */
+export const Markdown = memo(function Markdown({
+  text,
+  tableKind,
+}: {
+  text: string;
+  tableKind?: TableKind;
+}) {
   return (
     <div className="reading-text">
       <ReactMarkdown
@@ -217,4 +224,4 @@ export function Markdown({ text, tableKind }: { text: string; tableKind?: TableK
       </ReactMarkdown>
     </div>
   );
-}
+});

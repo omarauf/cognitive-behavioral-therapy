@@ -28,6 +28,8 @@ export const turkishContent = {
     permalink: "Bu bölümün bağlantısı",
     back: "Başa dön",
     section: "Bölüm",
+    part: "Kısım",
+    eyebrow: "Sade bir eğitim rehberi",
   },
   educationalNote:
     "Bu rehber eğitsel bir başlangıç kaynağıdır; klinik bir kılavuz veya yetkin bir terapistin değerlendirmesinin yerini tutan bir kaynak değildir. Örnekler kavramları açıklamak için kurgulanmıştır; herkes için terapi önerileri değildir.",

@@ -28,6 +28,8 @@ export const arabicContent = {
     permalink: "رابط هذا القسم",
     back: "العودة إلى البداية",
     section: "القسم",
+    part: "الجزء",
+    eyebrow: "دليل تعليمي مبسّط",
   },
   educationalNote,
   message: {

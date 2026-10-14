@@ -8,7 +8,7 @@ export function SectionVisual({ number, subsection }: { number: number; subsecti
       return <CognitiveDiagram />;
     case "5":
       return (
-        <figure className="learning-demo">
+        <figure className="learning-demo reveal">
           <AvoidanceDiagram />
         </figure>
       );

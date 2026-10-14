@@ -97,7 +97,7 @@ export function AvoidanceDiagram() {
 export function CognitiveDiagram() {
   const { cognitive } = useGuideContent();
   return (
-    <figure className="cognitive-diagram">
+    <figure className="cognitive-diagram reveal">
       <div className="situation">
         <div>
           <span>{cognitive.situation}</span>
@@ -137,7 +137,7 @@ export function CognitiveDiagram() {
 export function WavesDiagram() {
   const { waves } = useGuideContent();
   return (
-    <div className="waves-diagram">
+    <div className="waves-diagram reveal">
       <ol className="waves">
         {waves.map((wave) => (
           <li key={wave.title}>
