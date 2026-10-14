@@ -59,6 +59,7 @@ export const arabicContent = {
     body: "الجسم",
     response: "تسارع النبض",
     responseDetail: "وتعرق اليدين.",
+    hint: "اختر عنصرًا لترى كيف يرتبط بالعناصر الأخرى.",
   },
   waves: [
     {
@@ -79,6 +80,7 @@ export const arabicContent = {
   ],
   avoidanceSteps,
   avoidanceTitle: "الحلقة المفرغة للتجنب",
+  avoidancePlay: "تتبّع الحلقة",
 };
 
 export type GuideContent = Omit<

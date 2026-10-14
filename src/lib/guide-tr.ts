@@ -60,6 +60,7 @@ export const turkishContent = {
     body: "Beden",
     response: "Kalp atışının hızlanması",
     responseDetail: "Ve ellerin terlemesi.",
+    hint: "Diğerleriyle nasıl bağlantılı olduğunu görmek için bir öğe seçin.",
   },
   waves: [
     {
@@ -101,4 +102,5 @@ export const turkishContent = {
     },
   ],
   avoidanceTitle: "Kaçınmanın kısır döngüsü",
+  avoidancePlay: "Döngüyü izle",
 } satisfies GuideContent;
